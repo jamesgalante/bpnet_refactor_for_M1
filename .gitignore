@@ -1,0 +1,4 @@
+# Ignore ARCHIVED files
+ARCHIVE/
+
+# Ignore the data directory

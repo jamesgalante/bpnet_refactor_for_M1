@@ -1,0 +1,25 @@
+
+Run these commands in the created environment to test imports
+
+python -c "
+import tensorflow as tf
+import sys
+if tf.config.list_physical_devices('GPU'):
+    print('✅ MPS device detected')
+    try:
+        with tf.device('/GPU:0'):
+            a = tf.random.normal((100, 100))
+            result = tf.reduce_mean(tf.matmul(a, a))
+            print(f'✅ MPS computation successful: {result.numpy():.4f}')
+    except Exception as e:
+        print(f'❌ MPS computation failed: {e}')
+        sys.exit(1)
+else:
+    print('❌ No MPS device found')
+    sys.exit(1)
+"
+
+
+samtools --version > /dev/null && echo "✅ samtools working"
+bedtools --version > /dev/null && echo "✅ bedtools working"
+bedGraphToBigWig 2>&1 | grep -q "bigWig" && echo "✅ bedGraphToBigWig working"
