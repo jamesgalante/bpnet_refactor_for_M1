@@ -1,4 +1,5 @@
 # Ignore ARCHIVED files
 ARCHIVE/
 
-# Ignore the data directory
+# Ignore the BPNet refactored repo as I include instructions for downloading this
+bpnet-refactor/
