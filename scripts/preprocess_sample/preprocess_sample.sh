@@ -13,7 +13,7 @@ fi
 
 SAMPLE_NAME=$1
 ENV_NAME=$2
-SAMPLE_DIR="samples/$SAMPLE_NAME"
+SAMPLE_DIR="../../samples/$SAMPLE_NAME"
 
 # Check if sample directory and config exist
 if [ ! -d "$SAMPLE_DIR" ]; then
