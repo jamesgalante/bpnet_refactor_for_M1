@@ -93,8 +93,8 @@ The pipeline is organized into two main phases: global setup (run once) and samp
 First, set up the reference data and global configuration files:
 
 ```bash
-chmod +x scripts/setup/setup_global.sh
-./scripts/setup/setup_global.sh bpnet-m1
+chmod +x scripts/main.sh
+./scripts/main.sh setup bpnet-m1
 ```
 
 This creates:
@@ -143,8 +143,7 @@ The config.json structure:
 Process individual samples using their configuration:
 
 ```bash
-chmod +x scripts/pipeline/process_sample.sh
-./scripts/pipeline/process_sample.sh ENCSR000EGM bpnet-m1
+./scripts/main.sh process ENCSR000EGM bpnet-m1
 ```
 
 This runs the complete sample processing pipeline based on the bpnet-refactor tutorial:
@@ -173,7 +172,7 @@ To process additional samples, simply create new sample directories with their o
 ```bash
 mkdir -p samples/ANOTHER_SAMPLE
 # Create config.json for the new sample
-./scripts/pipeline/process_sample.sh ANOTHER_SAMPLE bpnet-m1
+./scripts/main.sh process ANOTHER_SAMPLE bpnet-m1
 ```
 
 ## Future Enhancements

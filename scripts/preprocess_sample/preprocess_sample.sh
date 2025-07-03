@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Process individual sample through BPNet pipeline
-# Usage: ./process_sample.sh <sample_name> <environment_name>
+# Usage: ./preprocess_sample.sh <sample_name> <environment_name>
 
 set -e  # Exit on any error
 
@@ -38,8 +38,41 @@ echo "=========================================="
 echo "Processing Sample: $SAMPLE_NAME"
 echo "=========================================="
 
-# Call the sample preprocessing script
-./preprocess_sample.sh "$SAMPLE_DIR"
+echo ""
+echo "=========================================="
+echo "BPNet Sample Preprocessing Pipeline"
+echo "Sample Directory: $SAMPLE_DIR"
+echo "=========================================="
+
+echo ""
+echo "Step 1: Downloading data..."
+echo "=========================================="
+./01_download_data.sh "$SAMPLE_DIR"
+
+echo ""
+echo "Step 2: Preprocessing data..."
+echo "=========================================="
+./02_preprocessing.sh "$SAMPLE_DIR"
+
+echo ""
+echo "Step 3: Removing outliers..."
+echo "=========================================="
+./03_outlier_removal.sh "$SAMPLE_DIR"
+
+echo ""
+echo "Step 4: Generating background regions..."
+echo "=========================================="
+./04_background_generation.sh "$SAMPLE_DIR"
+
+echo ""
+echo "Step 5: Creating input data configuration..."
+echo "=========================================="
+./05_create_input_data.sh "$SAMPLE_DIR"
+
+echo ""
+echo "Step 6: Calculating counts loss weight..."
+echo "=========================================="
+./06_calculate_counts_loss_weight.sh "$SAMPLE_DIR"
 
 echo ""
 echo "=========================================="
