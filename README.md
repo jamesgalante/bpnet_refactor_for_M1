@@ -105,6 +105,8 @@ This creates:
 
 ### 2. Sample Configuration
 
+This sample is from the original bpnet tutorial.
+
 For each sample, create a configuration file that specifies the download URLs. Create a sample directory and config file:
 
 ```bash
@@ -145,7 +147,7 @@ chmod +x scripts/pipeline/process_sample.sh
 ./scripts/pipeline/process_sample.sh ENCSR000EGM bpnet-m1
 ```
 
-This runs the complete sample processing pipeline:
+This runs the complete sample processing pipeline based on the bpnet-refactor tutorial:
 
 1. **Download**: Downloads sample data based on config.json URLs
 2. **Preprocessing**: Creates merged BAM files and bigwig tracks
