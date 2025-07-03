@@ -3,31 +3,31 @@
 set -e  # Exit on any error
 
 echo "=========================================="
-echo "BPNet Data Preparation Pipeline"
+echo "BPNet Model Setup Pipeline"
 echo "=========================================="
 
 echo ""
-echo "Step 1: Downloading data..."
+echo "Step 1: Creating Input JSON..."
 echo "=========================================="
-./scripts/data_preprocessing/01_download_data.sh
+./scripts/model_setup/05_create_input_data.sh
 
 echo ""
-echo "Step 2: Preprocessing data..."
+echo "Step 2: Creating BPNet Params..."
 echo "=========================================="
-./scripts/data_preprocessing/02_preprocessing.sh
+./scripts/model_setup/06_create_bpnet_params.sh
 
 echo ""
-echo "Step 3: Removing outliers..."
+echo "Step 3: Calculating Counts Loss Weight..."
 echo "=========================================="
-./scripts/data_preprocessing/03_outlier_removal.sh
+./scripts/model_setup/07_calculate_counts_loss_weight.sh
 
 echo ""
-echo "Step 4: Generating background regions..."
+echo "Step 4: Creating Splits..."
 echo "=========================================="
-./scripts/data_preprocessing/04_background_generation.sh
+./scripts/model_setup/08_create_splits.sh
 
 echo ""
 echo "=========================================="
-echo "Data preparation completed successfully!"
+echo "Model Setup Completed Successfully"
 echo "=========================================="
 echo ""
