@@ -18,9 +18,9 @@ echo "Step 2: Model Setup"
 echo "=========================================="
 ./scripts/Step2_model_setup.sh
 
-echo ""
-echo ""
-echo "=========================================="
-echo "Step 3: GPU M1 Testing"
-echo "=========================================="
-./scripts/Step3_M1_gpu_testing.sh
+# echo ""
+# echo ""
+# echo "=========================================="
+# echo "Step 3: GPU M1 Testing"
+# echo "=========================================="
+# ./scripts/Step3_M1_gpu_testing.sh

@@ -97,3 +97,9 @@ This will create a `ENCSR000EGM/` directory (where ENCSR000EGM is just the name 
 ### 2. Model Setup
 
 ### 3. GPU Testing
+
+## Feature List
+
+- consolidate any part of the scripts that activate the environment into one script
+- organize scripts into Sample specific components (bam files, bw files, etc.) and generalized components (reference genome, blacklist regions, etc.)
+- setup Mac M1 GPU testing

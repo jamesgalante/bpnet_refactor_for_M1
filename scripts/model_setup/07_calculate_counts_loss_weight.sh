@@ -4,7 +4,7 @@
 echo "Initializing conda"
 eval "$(conda shell.bash hook)"
 # Now activate the environment
-conda activate bpnet-refactored
+conda activate bpnet-m1
 
 # Calculate optimal counts loss weight for BPNet training
 echo "Calculating optimal counts loss weight"
