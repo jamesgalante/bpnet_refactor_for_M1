@@ -15,6 +15,8 @@ Build the conda environment by either creating the environment manually or throu
 
 #### Manual build
 
+Note: This manual download doesn't specify versioning - see `.yml` file for details.
+
 ```
 conda create -n bpnet-m1 python=3.8
 pip install tensorflow-macos tensorflow-metal tensorflow-probability
@@ -91,11 +93,12 @@ The pipeline is organized into two main phases: global setup (run once) and samp
 First, set up the reference data and global configuration files:
 
 ```bash
-chmod +x setup_global.sh
-./setup_global.sh bpnet-m1
+chmod +x scripts/setup/setup_global.sh
+./scripts/setup/setup_global.sh bpnet-m1
 ```
 
 This creates:
+
 - Reference genome, chromosome sizes, and blacklist regions in `reference/hg38/`
 - GC reference files for background generation
 - Global configuration files: `bpnet_params.json` and `splits.json`
@@ -124,6 +127,7 @@ EOF
 ```
 
 The config.json structure:
+
 - **sample_id**: Unique identifier for the sample
 - **description**: Human-readable description
 - **genome**: Reference genome (currently supports hg38)
@@ -137,11 +141,12 @@ The config.json structure:
 Process individual samples using their configuration:
 
 ```bash
-chmod +x process_sample.sh
-./process_sample.sh ENCSR000EGM bpnet-m1
+chmod +x scripts/pipeline/process_sample.sh
+./scripts/pipeline/process_sample.sh ENCSR000EGM bpnet-m1
 ```
 
 This runs the complete sample processing pipeline:
+
 1. **Download**: Downloads sample data based on config.json URLs
 2. **Preprocessing**: Creates merged BAM files and bigwig tracks
 3. **Outlier Removal**: Identifies and removes outlier peaks
@@ -150,6 +155,7 @@ This runs the complete sample processing pipeline:
 6. **Loss Weight Calculation**: Computes optimal counts loss weights
 
 Sample data is organized as:
+
 ```
 samples/ENCSR000EGM/
 ├── config.json          # Sample configuration
@@ -165,19 +171,10 @@ To process additional samples, simply create new sample directories with their o
 ```bash
 mkdir -p samples/ANOTHER_SAMPLE
 # Create config.json for the new sample
-./process_sample.sh ANOTHER_SAMPLE bpnet-m1
+./scripts/pipeline/process_sample.sh ANOTHER_SAMPLE bpnet-m1
 ```
-
-## Completed Features
-
-- ✅ **Environment Consolidation**: Conda environment activation is now consolidated in the main `process_sample.sh` script
-- ✅ **Sample vs Reference Separation**: Scripts are organized to separate sample-specific data (BAM files, bigwig files, peaks) from generalized reference components (genome, blacklist regions, GC reference)
-- ✅ **JSON-based Sample Configuration**: Each sample is configured via a simple JSON file specifying download URLs
-- ✅ **Automated Directory Organization**: Sample data is automatically organized into `resources/`, `processed/`, and `results/` subdirectories
-- ✅ **Global Setup Script**: Reference data and global configurations are set up once and shared across all samples
 
 ## Future Enhancements
 
 - Setup Mac M1 GPU testing and training workflows
 - Add support for additional reference genomes beyond hg38
-- Implement resume functionality for partially processed samples

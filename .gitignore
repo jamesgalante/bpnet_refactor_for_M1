@@ -3,3 +3,6 @@ ARCHIVE/
 
 # Ignore the BPNet refactored repo as I include instructions for downloading this
 bpnet-refactor/
+
+# Ignore the claude memory file
+CLAUDE.md
