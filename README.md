@@ -84,22 +84,100 @@ Great! Now our environment is all setup and we can start processing data
 
 ## Running Pipeline
 
-The entire pipeline includes, data pre-processing, model setup, and M1 GPU testing. To run all of these at once, see `main.sh` which coordinates all sub-processes. To run one setp individually, see the execution script mentioned in `main.sh`, and run that specific step. More granular resolution can be found within each `.sh` script in `scripts/`. For each step, there are multiple scripts within that step's `.sh` script in `scripts/`.
+The pipeline is organized into two main phases: global setup (run once) and sample processing (run per sample). The workflow is designed to support multiple samples while sharing reference data efficiently.
 
-### 1. Data Pre-processing
+### 1. Global Setup (Run Once)
 
-All data pre-processing, including downloading example data from ENCODE, and converting that data into a format usable with the BPNet models, is done in `data_preprocessing.sh`. Pre-processing is completed based on the README steps in the bpnet-refactor repo, starting from [here](https://github.com/kundajelab/bpnet-refactor#0-optional-additional-walk-through-for-downloading-and-preprocessing-an-example-data). However, the scripts in this repo are sufficient to reproduce the pre-processing steps. The README is only mentioned for reference.
+First, set up the reference data and global configuration files:
 
-To setup the data, first enable execution permissions `chmod u+x scripts/data_preprocessing.sh` then run `./scripts/data_preprocessing.sh`.
+```bash
+chmod +x setup_global.sh
+./setup_global.sh bpnet-m1
+```
 
-This will create a `ENCSR000EGM/` directory (where ENCSR000EGM is just the name of the ENCODE dataset downloaded), which will include any raw or processed data used in our experiment. Scripts 01-05 in `scripts/` provide a linear description of the download and setup process.
+This creates:
+- Reference genome, chromosome sizes, and blacklist regions in `reference/hg38/`
+- GC reference files for background generation
+- Global configuration files: `bpnet_params.json` and `splits.json`
 
-### 2. Model Setup
+### 2. Sample Configuration
 
-### 3. GPU Testing
+For each sample, create a configuration file that specifies the download URLs. Create a sample directory and config file:
 
-## Feature List
+```bash
+mkdir -p samples/ENCSR000EGM
+cat > samples/ENCSR000EGM/config.json << 'EOF'
+{
+  "sample_id": "ENCSR000EGM",
+  "description": "CTCF ChIP-seq from K562 cells",
+  "genome": "hg38",
+  "data_urls": {
+    "replicates": [
+      "https://www.encodeproject.org/files/ENCFF198CVB/@@download/ENCFF198CVB.bam",
+      "https://www.encodeproject.org/files/ENCFF488CXC/@@download/ENCFF488CXC.bam"
+    ],
+    "control": "https://www.encodeproject.org/files/ENCFF023NGN/@@download/ENCFF023NGN.bam",
+    "peaks": "https://www.encodeproject.org/files/ENCFF396BZQ/@@download/ENCFF396BZQ.bed.gz"
+  }
+}
+EOF
+```
 
-- consolidate any part of the scripts that activate the environment into one script
-- organize scripts into Sample specific components (bam files, bw files, etc.) and generalized components (reference genome, blacklist regions, etc.)
-- setup Mac M1 GPU testing
+The config.json structure:
+- **sample_id**: Unique identifier for the sample
+- **description**: Human-readable description
+- **genome**: Reference genome (currently supports hg38)
+- **data_urls**: URLs for downloading sample data
+  - **replicates**: Array of BAM file URLs for ChIP-seq replicates
+  - **control**: URL for control/input BAM file
+  - **peaks**: URL for peaks file (BED format, can be gzipped)
+
+### 3. Sample Processing
+
+Process individual samples using their configuration:
+
+```bash
+chmod +x process_sample.sh
+./process_sample.sh ENCSR000EGM bpnet-m1
+```
+
+This runs the complete sample processing pipeline:
+1. **Download**: Downloads sample data based on config.json URLs
+2. **Preprocessing**: Creates merged BAM files and bigwig tracks
+3. **Outlier Removal**: Identifies and removes outlier peaks
+4. **Background Generation**: Creates GC-matched background regions
+5. **Input Data Creation**: Generates sample-specific input_data.json
+6. **Loss Weight Calculation**: Computes optimal counts loss weights
+
+Sample data is organized as:
+```
+samples/ENCSR000EGM/
+├── config.json          # Sample configuration
+├── resources/            # Raw downloaded data
+├── processed/           # Intermediate processed files
+└── results/             # Final configuration files
+```
+
+### 4. Processing Additional Samples
+
+To process additional samples, simply create new sample directories with their own config.json files and run the processing script:
+
+```bash
+mkdir -p samples/ANOTHER_SAMPLE
+# Create config.json for the new sample
+./process_sample.sh ANOTHER_SAMPLE bpnet-m1
+```
+
+## Completed Features
+
+- ✅ **Environment Consolidation**: Conda environment activation is now consolidated in the main `process_sample.sh` script
+- ✅ **Sample vs Reference Separation**: Scripts are organized to separate sample-specific data (BAM files, bigwig files, peaks) from generalized reference components (genome, blacklist regions, GC reference)
+- ✅ **JSON-based Sample Configuration**: Each sample is configured via a simple JSON file specifying download URLs
+- ✅ **Automated Directory Organization**: Sample data is automatically organized into `resources/`, `processed/`, and `results/` subdirectories
+- ✅ **Global Setup Script**: Reference data and global configurations are set up once and shared across all samples
+
+## Future Enhancements
+
+- Setup Mac M1 GPU testing and training workflows
+- Add support for additional reference genomes beyond hg38
+- Implement resume functionality for partially processed samples

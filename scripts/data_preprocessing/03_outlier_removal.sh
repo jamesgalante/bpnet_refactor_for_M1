@@ -1,25 +1,32 @@
 #!/bin/bash
 
-# Initialize conda for this shell session
-eval "$(conda shell.bash hook)"
+# Remove outliers from sample peaks
+# Usage: ./03_outlier_removal.sh <sample_directory>
 
-# Now activate the environment
-conda activate bpnet-m1
+set -e  # Exit on any error
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <sample_directory>"
+    echo "Example: $0 samples/ENCSR000EGM"
+    exit 1
+fi
+
+SAMPLE_DIR=$1
 
 echo "Creating input_outliers.json"
-cat > input_outliers.json << 'EOF'
+cat > input_outliers.json << EOF
 {
     "0": {
         "signal": {
-            "source": ["ENCSR000EGM/data/plus.bw",
-                       "ENCSR000EGM/data/minus.bw"]
+            "source": ["$SAMPLE_DIR/processed/plus.bw",
+                       "$SAMPLE_DIR/processed/minus.bw"]
         },
         "loci": {
-            "source": ["ENCSR000EGM/data/peaks.bed"]
+            "source": ["$SAMPLE_DIR/processed/peaks.bed"]
         },
         "bias": {
-            "source": ["ENCSR000EGM/data/control_plus.bw",
-                       "ENCSR000EGM/data/control_minus.bw"],
+            "source": ["$SAMPLE_DIR/processed/control_plus.bw",
+                       "$SAMPLE_DIR/processed/control_minus.bw"],
             "smoothing": [null, null]
         }
     }
@@ -32,9 +39,9 @@ bpnet-outliers \
     --quantile 0.99 \
     --quantile-value-scale-factor 1.2 \
     --task 0 \
-    --chrom-sizes ENCSR000EGM/reference/hg38.chrom.sizes \
-    --chroms $(paste -s -d ' ' ENCSR000EGM/reference/chroms.txt) \
+    --chrom-sizes reference/hg38/hg38.chrom.sizes \
+    --chroms $(paste -s -d ' ' reference/hg38/chroms.txt) \
     --sequence-len 1000 \
-    --blacklist ENCSR000EGM/reference/blacklist.bed \
+    --blacklist reference/hg38/blacklist.bed \
     --global-sample-weight 1.0 \
-    --output-bed ENCSR000EGM/data/peaks_inliers.bed
+    --output-bed "$SAMPLE_DIR/processed/peaks_inliers.bed"

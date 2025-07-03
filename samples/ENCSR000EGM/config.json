@@ -1,0 +1,13 @@
+{
+  "sample_id": "ENCSR000EGM",
+  "description": "CTCF ChIP-seq from K562 cells",
+  "genome": "hg38",
+  "data_urls": {
+    "replicates": [
+      "https://www.encodeproject.org/files/ENCFF198CVB/@@download/ENCFF198CVB.bam",
+      "https://www.encodeproject.org/files/ENCFF488CXC/@@download/ENCFF488CXC.bam"
+    ],
+    "control": "https://www.encodeproject.org/files/ENCFF023NGN/@@download/ENCFF023NGN.bam",
+    "peaks": "https://www.encodeproject.org/files/ENCFF396BZQ/@@download/ENCFF396BZQ.bed.gz"
+  }
+}

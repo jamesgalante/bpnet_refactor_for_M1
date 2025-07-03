@@ -1,38 +1,63 @@
 #!/bin/bash
 
+# Download sample-specific data based on config.json
+# Usage: ./01_download_data.sh <sample_directory>
+
+set -e  # Exit on any error
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <sample_directory>"
+    echo "Example: $0 samples/ENCSR000EGM"
+    exit 1
+fi
+
+SAMPLE_DIR=$1
+
+# Check if config.json exists
+if [ ! -f "$SAMPLE_DIR/config.json" ]; then
+    echo "Error: Config file $SAMPLE_DIR/config.json not found"
+    exit 1
+fi
+
+# Extract URLs from config.json
+REPLICATE_URLS=$(python3 -c "
+import json, sys
+with open('$SAMPLE_DIR/config.json', 'r') as f:
+    config = json.load(f)
+for i, url in enumerate(config['data_urls']['replicates']):
+    print(f'rep{i+1}:{url}')
+")
+
+CONTROL_URL=$(python3 -c "
+import json
+with open('$SAMPLE_DIR/config.json', 'r') as f:
+    config = json.load(f)
+print(config['data_urls']['control'])
+")
+
+PEAKS_URL=$(python3 -c "
+import json
+with open('$SAMPLE_DIR/config.json', 'r') as f:
+    config = json.load(f)
+print(config['data_urls']['peaks'])
+")
+
 # Make directories if they don't exist
 echo "Making directories"
-mkdir -p ENCSR000EGM/data/
-mkdir -p ENCSR000EGM/reference/
-
+mkdir -p "$SAMPLE_DIR/resources/"
+mkdir -p "$SAMPLE_DIR/processed/"
+mkdir -p "$SAMPLE_DIR/results/"
 
 # Download the ChIP-Seq data
-echo "Downloading replicate 1"
-wget https://www.encodeproject.org/files/ENCFF198CVB/@@download/ENCFF198CVB.bam -O ENCSR000EGM/data/rep1.bam
-echo "Downloading replicate 2"
-wget https://www.encodeproject.org/files/ENCFF488CXC/@@download/ENCFF488CXC.bam -O ENCSR000EGM/data/rep2.bam
+echo "Downloading replicates..."
+echo "$REPLICATE_URLS" | while IFS=':' read -r rep_name url; do
+    echo "Downloading $rep_name"
+    wget "$url" -O "$SAMPLE_DIR/resources/$rep_name.bam"
+done
+
 echo "Downloading control"
-wget https://www.encodeproject.org/files/ENCFF023NGN/@@download/ENCFF023NGN.bam -O ENCSR000EGM/data/control.bam
+wget "$CONTROL_URL" -O "$SAMPLE_DIR/resources/control.bam"
 
-
-# Download genome refrence
-echo "Downloading genome fasta files"
-wget https://www.encodeproject.org/files/GRCh38_no_alt_analysis_set_GCA_000001405.15/@@download/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.gz -O ENCSR000EGM/reference/hg38.genome.fa.gz
-gunzip ENCSR000EGM/reference/hg38.genome.fa.gz
-# index genome reference
-echo "Indexing genome reference"
-samtools faidx ENCSR000EGM/reference/hg38.genome.fa
-
-# Download chrom sizes
-echo "Getting and processing chromosome sizes"
-wget https://www.encodeproject.org/files/GRCh38_EBV.chrom.sizes/@@download/GRCh38_EBV.chrom.sizes.tsv -O ENCSR000EGM/reference/GRCh38_EBV.chrom.sizes.tsv
-# exclude alt contigs and chrEBV
-grep -v -e '_' -e 'chrEBV' ENCSR000EGM/reference/GRCh38_EBV.chrom.sizes.tsv > ENCSR000EGM/reference/hg38.chrom.sizes
-rm ENCSR000EGM/reference/GRCh38_EBV.chrom.sizes.tsv
-# make file with chromosomes only
-awk '{print $1}' ENCSR000EGM/reference/hg38.chrom.sizes > ENCSR000EGM/reference/chroms.txt
-
-# Download blacklist
-echo "Download the blacklist"
-wget https://www.encodeproject.org/files/ENCFF356LFX/@@download/ENCFF356LFX.bed.gz -O ENCSR000EGM/reference/blacklist.bed.gz
-gunzip ENCSR000EGM/reference/blacklist.bed.gz
+echo "Downloading peaks"
+wget "$PEAKS_URL" -O "$SAMPLE_DIR/resources/peaks.bed.gz"
+gunzip "$SAMPLE_DIR/resources/peaks.bed.gz"

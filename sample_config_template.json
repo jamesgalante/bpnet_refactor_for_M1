@@ -1,0 +1,13 @@
+{
+  "sample_id": "SAMPLE_NAME",
+  "description": "Brief description of the sample",
+  "genome": "hg38",
+  "data_urls": {
+    "replicates": [
+      "https://example.com/path/to/replicate1.bam",
+      "https://example.com/path/to/replicate2.bam"
+    ],
+    "control": "https://example.com/path/to/control.bam",
+    "peaks": "https://example.com/path/to/peaks.bed.gz"
+  }
+}

@@ -1,0 +1,23 @@
+CHECKPOINT: How to revert to current state before implementing generalized pipeline
+
+Current git commit: 90a151e BEFORE CLAUDE CHANGES
+
+To revert all changes and return to current state:
+
+1. Reset to the checkpoint commit:
+   git reset --hard 90a151e
+
+2. Force push to remote (if needed):
+   git push origin main --force-with-lease
+
+3. Verify clean state:
+   git status
+
+This will restore the exact state before implementing the generalized pipeline changes.
+
+Alternative - if you want to keep commit history:
+1. Create a new branch from current state:
+   git checkout -b revert-generalized-pipeline 90a151e
+
+2. Switch back to main:
+   git checkout main
