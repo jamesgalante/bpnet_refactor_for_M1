@@ -84,8 +84,10 @@ Great! Now our environment is all setup and we can start processing data
 
 ## Data Pre-processing
 
-All data pre-processing, including downloading example data from ENCODE, and converting that data into a format usable with the BPNet models, is done in `data_preprocessing.sh`
+All data pre-processing, including downloading example data from ENCODE, and converting that data into a format usable with the BPNet models, is done in `data_preprocessing.sh`. Pre-processing is completed based on the README steps in the bpnet-refactor repo, starting from [here](https://github.com/kundajelab/bpnet-refactor#0-optional-additional-walk-through-for-downloading-and-preprocessing-an-example-data). However, the scripts in this repo are sufficient to reproduce the pre-processing steps. The README is only mentioned for reference.
 
 To setup the data, first enable execution permissions `chmod u+x scripts/data_preprocessing.sh` then run `./scripts/data_preprocessing.sh`.
 
-This will create a `data/` directory, which will include any raw or processed data used in our experiment.
+This will create a `ENCSR000EGM/` directory (where ENCSR000EGM is just the name of the ENCODE dataset downloaded), which will include any raw or processed data used in our experiment. Scripts 01-05 in `scripts/` provide a linear description of the download and setup process.
+
+## Model Setup
