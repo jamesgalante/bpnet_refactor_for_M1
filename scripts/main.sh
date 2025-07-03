@@ -36,7 +36,7 @@ case $MODE in
         fi
         ENV_NAME=$1
         echo "Running global setup with environment: $ENV_NAME"
-        ./setup/setup_global.sh "$ENV_NAME"
+        ./scripts/setup/setup_global.sh "$ENV_NAME"
         ;;
     
     process)
@@ -48,7 +48,7 @@ case $MODE in
         SAMPLE_NAME=$1
         ENV_NAME=$2
         echo "Processing sample: $SAMPLE_NAME with environment: $ENV_NAME"
-        cd preprocess_sample
+        cd scripts/preprocess_sample
         ./preprocess_sample.sh "$SAMPLE_NAME" "$ENV_NAME"
         ;;
     

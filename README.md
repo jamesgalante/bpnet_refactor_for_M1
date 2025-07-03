@@ -17,8 +17,9 @@ Build the conda environment by either creating the environment manually or throu
 
 Note: This manual download doesn't specify versioning - see `.yml` file for details.
 
-```
-conda create -n bpnet-m1 python=3.8
+```bash
+conda create -n env_name_here python=3.8
+conda activate env_name_here
 pip install tensorflow-macos tensorflow-metal tensorflow-probability
 conda install -y hdf5 pytables
 pip install pysam==0.18.0 py2bit==0.3.0 tqdm scikit-learn scipy scikit-image deepdish pandas matplotlib plotly deeptools pyfaidx hdf5plugin deeplift
@@ -28,8 +29,8 @@ conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 
 #### Automatic build
 
-```
-conda env create -f bpnet-m1.yml
+```bash
+conda env create -f bpnet-m1.yml -n env_name_here
 ```
 
 ### Clone the BPNet Refactored repo
@@ -50,7 +51,8 @@ git checkout 33578afcdb0faf06457c9a35dea4791ab53c671b
 
 Before running anything else, let's make sure tensorflow can find our Mac GPUs:
 
-```
+```bash
+conda activate env_name_here
 python -c "
 import tensorflow as tf
 import sys
@@ -94,7 +96,7 @@ First, set up the reference data and global configuration files:
 
 ```bash
 chmod +x scripts/main.sh
-./scripts/main.sh setup bpnet-m1
+./scripts/main.sh setup env_name_here
 ```
 
 This creates:
@@ -143,7 +145,7 @@ The config.json structure:
 Process individual samples using their configuration:
 
 ```bash
-./scripts/main.sh process ENCSR000EGM bpnet-m1
+./scripts/main.sh process ENCSR000EGM env_name_here
 ```
 
 This runs the complete sample processing pipeline based on the bpnet-refactor tutorial:
@@ -172,7 +174,7 @@ To process additional samples, simply create new sample directories with their o
 ```bash
 mkdir -p samples/ANOTHER_SAMPLE
 # Create config.json for the new sample
-./scripts/main.sh process ANOTHER_SAMPLE bpnet-m1
+./scripts/main.sh process ANOTHER_SAMPLE env_name_here
 ```
 
 ## Future Enhancements
