@@ -62,7 +62,8 @@ fi
 # Create GC reference
 echo "Creating GC reference..."
 if [ ! -f reference/hg38/genomewide_gc_stride_1000_flank_size_1057.gc.bed ]; then
-    python bpnet-refactor/bpnet/cli/bpnet_gc_reference.py \
+    export PYTHONPATH="./bpnet-refactor:$PYTHONPATH"
+    python -m bpnet.cli.bpnet_gc_reference \
         --ref_fasta reference/hg38/hg38.genome.fa \
         --chrom_sizes reference/hg38/hg38.chrom.sizes \
         --output_prefix reference/hg38/genomewide_gc_stride_1000_flank_size_1057.gc \

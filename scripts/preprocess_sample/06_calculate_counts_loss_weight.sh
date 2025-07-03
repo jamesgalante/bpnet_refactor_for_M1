@@ -19,7 +19,8 @@ INPUT_DATA="$SAMPLE_DIR/results/input_data.json"
 
 # Run bpnet-counts-loss-weight command
 echo "Running bpnet-counts-loss-weight command..."
-python ../../bpnet-refactor/bpnet/cli/bpnet_counts_loss_weight.py --input-data "$INPUT_DATA"
+export PYTHONPATH="../../bpnet-refactor:$PYTHONPATH"
+python -m bpnet.cli.bpnet_counts_loss_weight --input-data "$INPUT_DATA"
 
 echo "Counts loss weight calculation completed"
 echo "Note: Update the 'loss_weights' field in bpnet_params.json with the calculated value"
