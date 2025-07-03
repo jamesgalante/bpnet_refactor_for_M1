@@ -9,11 +9,18 @@ echo ""
 echo "=========================================="
 echo "Step 1: Data Preprocessing"
 echo "=========================================="
-./scripts/data_preprocessing.sh
+./scripts/Step1_data_preprocessing.sh
 
 echo ""
 echo ""
 echo "=========================================="
 echo "Step 2: Model Setup"
 echo "=========================================="
-./scripts/model_setup.sh
+./scripts/Step2_model_setup.sh
+
+echo ""
+echo ""
+echo "=========================================="
+echo "Step 3: GPU M1 Testing"
+echo "=========================================="
+./scripts/Step3_M1_gpu_testing.sh

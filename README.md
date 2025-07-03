@@ -82,7 +82,11 @@ You should see something like this:
 
 Great! Now our environment is all setup and we can start processing data
 
-## Data Pre-processing
+## Running Pipeline
+
+The entire pipeline includes, data pre-processing, model setup, and M1 GPU testing. To run all of these at once, see `main.sh` which coordinates all sub-processes. To run one setp individually, see the execution script mentioned in `main.sh`, and run that specific step. More granular resolution can be found within each `.sh` script in `scripts/`. For each step, there are multiple scripts within that step's `.sh` script in `scripts/`.
+
+### 1. Data Pre-processing
 
 All data pre-processing, including downloading example data from ENCODE, and converting that data into a format usable with the BPNet models, is done in `data_preprocessing.sh`. Pre-processing is completed based on the README steps in the bpnet-refactor repo, starting from [here](https://github.com/kundajelab/bpnet-refactor#0-optional-additional-walk-through-for-downloading-and-preprocessing-an-example-data). However, the scripts in this repo are sufficient to reproduce the pre-processing steps. The README is only mentioned for reference.
 
@@ -90,4 +94,6 @@ To setup the data, first enable execution permissions `chmod u+x scripts/data_pr
 
 This will create a `ENCSR000EGM/` directory (where ENCSR000EGM is just the name of the ENCODE dataset downloaded), which will include any raw or processed data used in our experiment. Scripts 01-05 in `scripts/` provide a linear description of the download and setup process.
 
-## Model Setup
+### 2. Model Setup
+
+### 3. GPU Testing
