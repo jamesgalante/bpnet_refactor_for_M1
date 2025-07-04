@@ -51,13 +51,29 @@ mkdir -p "$SAMPLE_DIR/results/"
 # Download the ChIP-Seq data
 echo "Downloading replicates..."
 echo "$REPLICATE_URLS" | while IFS=':' read -r rep_name url; do
-    echo "Downloading $rep_name"
-    wget "$url" -O "$SAMPLE_DIR/resources/$rep_name.bam"
+    if [ ! -f "$SAMPLE_DIR/resources/$rep_name.bam" ]; then
+        echo "Downloading $rep_name"
+        wget "$url" -O "$SAMPLE_DIR/resources/$rep_name.bam"
+    else
+        echo "$rep_name already exists, skipping download"
+    fi
 done
 
 echo "Downloading control"
-wget "$CONTROL_URL" -O "$SAMPLE_DIR/resources/control.bam"
+if [ ! -f "$SAMPLE_DIR/resources/control.bam" ]; then
+    wget "$CONTROL_URL" -O "$SAMPLE_DIR/resources/control.bam"
+else
+    echo "control.bam already exists, skipping download"
+fi
 
 echo "Downloading peaks"
-wget "$PEAKS_URL" -O "$SAMPLE_DIR/resources/peaks.bed.gz"
-gunzip "$SAMPLE_DIR/resources/peaks.bed.gz"
+if [ ! -f "$SAMPLE_DIR/resources/peaks.bed" ]; then
+    if [ ! -f "$SAMPLE_DIR/resources/peaks.bed.gz" ]; then
+        wget "$PEAKS_URL" -O "$SAMPLE_DIR/resources/peaks.bed.gz"
+    else
+        echo "peaks.bed.gz already exists, skipping download"
+    fi
+    gunzip "$SAMPLE_DIR/resources/peaks.bed.gz"
+else
+    echo "peaks.bed already exists, skipping download and extraction"
+fi
