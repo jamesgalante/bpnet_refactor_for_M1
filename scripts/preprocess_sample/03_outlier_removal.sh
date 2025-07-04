@@ -34,8 +34,7 @@ cat > input_outliers.json << EOF
 EOF
 
 echo "Running bpnet-outliers"
-export PYTHONPATH="../../bpnet-refactor:$PYTHONPATH"
-python -m bpnet.cli.bpnet_outliers \
+python ../../bpnet-refactor/bpnet/cli/outliers.py \
     --input-data input_outliers.json  \
     --quantile 0.99 \
     --quantile-value-scale-factor 1.2 \
