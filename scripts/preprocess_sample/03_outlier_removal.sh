@@ -40,9 +40,9 @@ python -m bpnet.cli.bpnet_outliers \
     --quantile 0.99 \
     --quantile-value-scale-factor 1.2 \
     --task 0 \
-    --chrom-sizes reference/hg38/hg38.chrom.sizes \
-    --chroms $(paste -s -d ' ' reference/hg38/chroms.txt) \
+    --chrom-sizes ../../reference/hg38/hg38.chrom.sizes \
+    --chroms $(paste -s -d ' ' ../../reference/hg38/chroms.txt) \
     --sequence-len 1000 \
-    --blacklist reference/hg38/blacklist.bed \
+    --blacklist ../../reference/hg38/blacklist.bed \
     --global-sample-weight 1.0 \
     --output-bed "$SAMPLE_DIR/processed/peaks_inliers.bed"

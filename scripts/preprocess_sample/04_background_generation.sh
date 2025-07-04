@@ -19,10 +19,10 @@ echo "Using global GC reference (created during setup_global.sh)"
 echo "Creating gc background"
 export PYTHONPATH="../../bpnet-refactor:$PYTHONPATH"
 python -m bpnet.cli.bpnet_gc_background \
-        --ref_fasta reference/hg38/hg38.genome.fa \
+        --ref_fasta ../../reference/hg38/hg38.genome.fa \
         --peaks_bed "$SAMPLE_DIR/processed/peaks_inliers.bed" \
         --out_dir "$SAMPLE_DIR/processed/" \
-        --ref_gc_bed reference/hg38/genomewide_gc_stride_1000_flank_size_1057.gc.bed \
+        --ref_gc_bed ../../reference/hg38/genomewide_gc_stride_1000_flank_size_1057.gc.bed \
         --output_prefix gc_negatives \
         --flank_size 1057 \
         --neg_to_pos_ratio_train 4
