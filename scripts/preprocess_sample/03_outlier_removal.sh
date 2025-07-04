@@ -14,7 +14,7 @@ fi
 SAMPLE_DIR=$1
 
 echo "Creating input_outliers.json"
-cat > input_outliers.json << EOF
+cat > "$SAMPLE_DIR/input_outliers.json" << EOF
 {
     "0": {
         "signal": {
@@ -35,7 +35,7 @@ EOF
 
 echo "Running bpnet-outliers"
 python ../../bpnet-refactor/bpnet/cli/outliers.py \
-    --input-data input_outliers.json  \
+    --input-data "$SAMPLE_DIR/input_outliers.json"  \
     --quantile 0.99 \
     --quantile-value-scale-factor 1.2 \
     --task 0 \

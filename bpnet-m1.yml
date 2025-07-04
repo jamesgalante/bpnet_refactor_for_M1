@@ -1,4 +1,4 @@
-name: bpnet-m1
+name: testing-bpnet-m1_version2
 channels:
   - conda-forge
   - bioconda
@@ -30,7 +30,7 @@ dependencies:
   - libnghttp2=1.64.0=h6d7220d_0
   - libopenblas=0.3.30=openmp_hf332438_0
   - libopenssl-static=3.5.1=h39f12f2_0
-  - libpng=1.6.49=h3783ad8_0
+  - libpng=1.6.50=h3783ad8_0
   - libsqlite=3.50.2=h6fb428d_0
   - libssh2=1.11.1=h1590b86_0
   - libuuid=2.38.1=h1a8c8d9_0
@@ -59,7 +59,7 @@ dependencies:
   - zlib-ng=2.0.7=h1a8c8d9_0
   - zstd=1.5.7=h6491c7d_2
   - pip:
-      - absl-py==2.3.0
+      - absl-py==2.3.1
       - alabaster==0.7.13
       - appnope==0.1.4
       - asttokens==3.0.0
@@ -112,7 +112,7 @@ dependencies:
       - numpydoc==1.7.0
       - oauthlib==3.3.1
       - opt-einsum==3.4.0
-      - pandas==2.0.3
+      - pandas==1.3.5
       - parso==0.8.4
       - pexpect==4.9.0
       - pickleshare==0.7.5
@@ -164,10 +164,9 @@ dependencies:
       - tqdm==4.67.1
       - traitlets==5.14.3
       - typing-extensions==4.5.0
-      - tzdata==2025.2
       - urllib3==2.2.3
       - wcwidth==0.2.13
       - werkzeug==3.0.6
       - wrapt==1.17.2
       - zipp==3.20.2
-# prefix: /opt/homebrew/Caskroom/miniforge/base/envs/bpnet-m1
+prefix: /opt/homebrew/Caskroom/miniforge/base/envs/testing-bpnet-m1_version2
