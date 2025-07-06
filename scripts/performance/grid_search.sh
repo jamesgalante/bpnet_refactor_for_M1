@@ -16,7 +16,11 @@ fi
 ENV_NAME=$1
 TIMEOUT_SECONDS=${2:-90}
 SAMPLE_NAME="ENCSR000EGM"
-RESULTS_FILE="performance_testing/grid_search_results.csv"
+
+# Create performance testing output directory early
+PERFORMANCE_DIR="performance_testing"
+mkdir -p "$PERFORMANCE_DIR"
+RESULTS_FILE="$PERFORMANCE_DIR/grid_search_results.csv"
 
 # Determine the correct path based on where script is run from
 if [ -d "samples/$SAMPLE_NAME" ]; then
@@ -70,9 +74,7 @@ conda activate "$ENV_NAME"
 # Set PYTHONPATH for bpnet-refactor
 export PYTHONPATH="$(pwd)/$BPNET_DIR:$PYTHONPATH"
 
-# Create performance testing output directory
-PERFORMANCE_DIR="performance_testing"
-mkdir -p "$PERFORMANCE_DIR"
+# PERFORMANCE_DIR already created above
 
 # Set up paths
 BASE_DIR="$SAMPLE_DIR"
@@ -140,8 +142,11 @@ for threads in "${THREADS_LIST[@]}"; do
         MODEL_DIR="$BASE_DIR/models/grid_search_${threads}t_${batch_size}b"
         mkdir -p "$MODEL_DIR"
         
-        # Log file for this run
+        # Log file for this run  
         LOG_FILE="$PERFORMANCE_DIR/training_${threads}t_${batch_size}b.log"
+        
+        # Ensure performance directory exists before this run
+        mkdir -p "$PERFORMANCE_DIR"
         
         echo "Starting training run..."
         echo "Log file: $LOG_FILE"
