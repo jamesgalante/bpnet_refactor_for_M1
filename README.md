@@ -47,6 +47,8 @@ cd bpnet-refactor
 git checkout 33578afcdb0faf06457c9a35dea4791ab53c671b
 ```
 
+**Important Bug Fix:** The upstream bpnet-refactor code contains a bug in `bpnet/cli/gc/get_gc_background.py` at line 72. The line reads `if __name__ == 'main':` but should be `if __name__ == '__main__':` (missing double underscores). This bug causes the script to run without errors but produce no output files. **This bug has been fixed in our local copy** - if you use a fresh clone, you'll need to manually fix this line to make background generation work.
+
 ### Testing functionality
 
 Before running anything else, let's make sure tensorflow can find our Mac GPUs:
