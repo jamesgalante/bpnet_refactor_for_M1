@@ -17,13 +17,19 @@ ENV_NAME=${1:-""}
 echo "=========================================="
 echo "BPNet Grid Search Log Analysis"
 echo "=========================================="
-echo "Analyzing log files in current directory..."
+echo "Analyzing log files in performance_testing directory..."
 echo ""
 
-# Check if log files exist
-LOG_COUNT=$(ls training_*t_*b.log 2>/dev/null | wc -l)
+# Check if performance_testing directory and log files exist
+if [ ! -d "performance_testing" ]; then
+    echo "Error: performance_testing directory not found"
+    echo "Please run grid search first: ./scripts/performance/grid_search.sh ENV_NAME"
+    exit 1
+fi
+
+LOG_COUNT=$(ls performance_testing/training_*t_*b.log 2>/dev/null | wc -l)
 if [ $LOG_COUNT -eq 0 ]; then
-    echo "Error: No grid search log files found (training_*t_*b.log)"
+    echo "Error: No grid search log files found in performance_testing/"
     echo "Please run grid search first: ./scripts/performance/grid_search.sh ENV_NAME"
     exit 1
 fi
@@ -91,15 +97,15 @@ echo ""
 echo "Running analysis..."
 echo ""
 
-# Run the analysis script
-python3 scripts/performance/analyze_grid_search.py .
+# Run the analysis script on performance_testing directory
+python3 scripts/performance/analyze_grid_search.py performance_testing
 
 echo ""
 echo "=========================================="
 echo "Analysis Complete!"
 echo "=========================================="
 echo "Generated files:"
-echo "  - plots/: Performance visualization plots"
-echo "  - grid_search_analysis.json: Detailed results data"
+echo "  - performance_testing/plots/: Performance visualization plots"
+echo "  - performance_testing/grid_search_analysis.json: Detailed results data"
 echo ""
 echo "Open the plots directory to view performance charts!"

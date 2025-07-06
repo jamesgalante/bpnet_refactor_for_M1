@@ -199,10 +199,11 @@ for threads in "${THREADS_LIST[@]}"; do
             echo "Training failed with exit code $exit_code"
         fi
         
-        # Parse progress from log file
+        # Parse progress and calculate true training duration from timestamps
         steps_completed=0
         total_steps=0
         steps_per_minute=0
+        true_duration=0
         
         # Extract the last progress line (most recent progress)
         last_progress_line=$(grep -E "[0-9]+/[0-9]+ \[.*\] - ETA:" "$LOG_FILE" | tail -1 || echo "")
@@ -215,9 +216,36 @@ for threads in "${THREADS_LIST[@]}"; do
                 steps_completed=${BASH_REMATCH[1]}
                 total_steps=${BASH_REMATCH[2]}
                 
-                # Calculate steps per minute
-                if [ $time_elapsed -gt 0 ]; then
-                    steps_per_minute=$((steps_completed * 60 / time_elapsed))
+                # Calculate true training duration from timestamps
+                training_start=$(grep "Training Epoch 1" "$LOG_FILE" | head -1 | grep -o "2025-[0-9-]* [0-9:]*")
+                training_end=$(grep "Training ended at:" "$LOG_FILE" | tail -1 | grep -o "2025-[0-9-]* [0-9:]*")
+                
+                if [ -n "$training_start" ] && [ -n "$training_end" ]; then
+                    # Convert to epoch seconds and calculate difference
+                    start_epoch=$(date -d "$training_start" +%s 2>/dev/null || echo "0")
+                    end_epoch=$(date -d "$training_end" +%s 2>/dev/null || echo "0")
+                    
+                    if [ $start_epoch -gt 0 ] && [ $end_epoch -gt 0 ]; then
+                        true_duration=$((end_epoch - start_epoch))
+                        echo "Training duration: ${true_duration}s (from $training_start to $training_end)"
+                        
+                        # Calculate steps per minute using true duration
+                        if [ $true_duration -gt 0 ]; then
+                            steps_per_minute=$((steps_completed * 60 / true_duration))
+                        fi
+                    else
+                        echo "Warning: Could not parse timestamps, using timeout duration"
+                        true_duration=$time_elapsed
+                        if [ $time_elapsed -gt 0 ]; then
+                            steps_per_minute=$((steps_completed * 60 / time_elapsed))
+                        fi
+                    fi
+                else
+                    echo "Warning: Could not find training timestamps, using timeout duration"
+                    true_duration=$time_elapsed
+                    if [ $time_elapsed -gt 0 ]; then
+                        steps_per_minute=$((steps_completed * 60 / time_elapsed))
+                    fi
                 fi
                 
                 echo "Progress: $steps_completed/$total_steps steps ($((steps_completed * 100 / total_steps))%)"
@@ -225,10 +253,11 @@ for threads in "${THREADS_LIST[@]}"; do
             fi
         else
             echo "No progress information found in log"
+            true_duration=$time_elapsed
         fi
         
-        # Write results to CSV
-        echo "$threads,$batch_size,$steps_completed,$total_steps,$time_elapsed,$steps_per_minute,$status" >> "$RESULTS_FILE"
+        # Write results to CSV (using true training duration)
+        echo "$threads,$batch_size,$steps_completed,$total_steps,$true_duration,$steps_per_minute,$status" >> "$RESULTS_FILE"
         
         # Clean up model directory to save space
         rm -rf "$MODEL_DIR"
