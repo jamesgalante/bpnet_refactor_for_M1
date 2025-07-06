@@ -313,10 +313,9 @@ def create_visualizations(df, output_dir='performance_testing/plots'):
     # Reset index to make threads and batch_size regular columns
     summary_data = summary_data.reset_index()
     
-    # Create table
+    # Create table - match column count with actual data
     table = plt.table(cellText=summary_data.values,
-                     colLabels=['Threads', 'Batch Size', 'Steps Done', 'Total Steps',
-                               'Steps/Min', 'Progress %', 'Efficiency'],
+                     colLabels=list(summary_data.columns),
                      cellLoc='center',
                      loc='center')
     
