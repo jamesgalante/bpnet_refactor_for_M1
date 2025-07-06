@@ -144,7 +144,7 @@ def parse_log_file(log_path):
     
     return result
 
-def analyze_logs(log_directory='.'):
+def analyze_logs(log_directory='performance_testing'):
     """Analyze all grid search log files in the directory."""
     
     print("BPNet Grid Search Log Analysis")
@@ -181,7 +181,7 @@ def analyze_logs(log_directory='.'):
     
     return df
 
-def create_visualizations(df, output_dir='plots'):
+def create_visualizations(df, output_dir='performance_testing/plots'):
     """Create comprehensive performance visualizations."""
     
     # Create output directory
@@ -370,8 +370,11 @@ def find_optimal_configurations(df):
     for threads, row in thread_performance.iterrows():
         print(f"  {threads} threads: avg {row['mean']:.1f}, max {row['max']:.1f} steps/min")
 
-def save_analysis_results(df, output_file='grid_search_analysis.json'):
+def save_analysis_results(df, output_file='performance_testing/grid_search_analysis.json'):
     """Save detailed analysis results to JSON file."""
+    
+    # Ensure output directory exists
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     
     # Convert DataFrame to dict and handle numpy types
     results = {
@@ -421,8 +424,8 @@ def save_analysis_results(df, output_file='grid_search_analysis.json'):
 def main():
     """Main analysis function."""
     
-    # Get log directory from command line argument or use current directory
-    log_directory = sys.argv[1] if len(sys.argv) > 1 else '.'
+    # Get log directory from command line argument or use performance_testing directory
+    log_directory = sys.argv[1] if len(sys.argv) > 1 else 'performance_testing'
     
     # Analyze logs
     df = analyze_logs(log_directory)
@@ -438,7 +441,7 @@ def main():
     # Save detailed results
     save_analysis_results(df)
     
-    print(f"\nAnalysis complete! Check the 'plots/' directory for visualizations.")
+    print(f"\nAnalysis complete! Check the 'performance_testing/plots/' directory for visualizations.")
 
 if __name__ == '__main__':
     main()
