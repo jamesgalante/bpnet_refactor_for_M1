@@ -70,9 +70,9 @@ echo "=========================================="
 ./05_create_input_data.sh "$SAMPLE_DIR"
 
 echo ""
-echo "Step 6: Calculating counts loss weight..."
+echo "Step 6: Creating model configuration files..."
 echo "=========================================="
-./06_calculate_counts_loss_weight.sh "$SAMPLE_DIR"
+./06_create_model_configs.sh "$SAMPLE_DIR"
 
 echo ""
 echo "=========================================="
