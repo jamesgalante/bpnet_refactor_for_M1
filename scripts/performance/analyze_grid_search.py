@@ -80,17 +80,40 @@ def parse_log_file(log_path):
         result['all_steps'] = []
         result['all_progress_times'] = []
     
-    # Extract timing information from log timestamps
-    timestamp_pattern = r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d+ - root - INFO'
-    timestamps = re.findall(timestamp_pattern, content)
+    # Extract timing information using precise training start/end parsing
+    lines = content.split('\n')
+    timestamp_pattern = r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}'
+    training_start_pattern = r'Training Epoch 1'
+    progress_pattern = r'(\d+)/(\d+) \[.*?\] - ETA: ([\d:]+)'
     
-    if len(timestamps) >= 2:
+    start_time = None
+    end_time = None
+    last_progress_time = None
+    
+    for line in lines:
+        # Extract timestamp
+        timestamp_match = re.search(timestamp_pattern, line)
+        if not timestamp_match:
+            continue
+            
+        timestamp_str = timestamp_match.group(1)
         try:
-            start_time = datetime.strptime(timestamps[0], '%Y-%m-%d %H:%M:%S')
-            end_time = datetime.strptime(timestamps[-1], '%Y-%m-%d %H:%M:%S')
-            result['duration_seconds'] = (end_time - start_time).total_seconds()
+            current_time = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
         except:
-            result['duration_seconds'] = None
+            continue
+        
+        # Check for training start (first occurrence of "Training Epoch 1")
+        if re.search(training_start_pattern, line) and start_time is None:
+            start_time = current_time
+            
+        # Check for progress updates (to find last progress time)
+        if re.search(progress_pattern, line):
+            last_progress_time = current_time
+    
+    # Calculate duration from Training Epoch 1 to last progress update
+    if start_time and last_progress_time:
+        duration = last_progress_time - start_time
+        result['duration_seconds'] = duration.total_seconds()
     else:
         result['duration_seconds'] = None
     
@@ -279,12 +302,13 @@ def create_visualizations(df, output_dir='plots'):
         'steps_completed': 'first',
         'total_steps_from_progress': 'first', 
         'steps_per_minute': 'first',
-        'progress_percent': 'first'
+        'progress_percent': 'first',
+        'duration_seconds': 'first'
     }).round(1)
     
-    # Add efficiency metric (progress per minute)
+    # Add efficiency metric (progress per minute) using actual training time
     summary_data['efficiency'] = (summary_data['progress_percent'] / 
-                                 (90/60)).round(1)  # progress percent per minute
+                                 (summary_data['duration_seconds']/60)).round(1)  # progress percent per minute
     
     # Reset index to make threads and batch_size regular columns
     summary_data = summary_data.reset_index()
