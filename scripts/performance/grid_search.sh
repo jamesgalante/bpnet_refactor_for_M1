@@ -316,4 +316,28 @@ echo "All log files saved with pattern: performance_testing/training_*t_*b.log"
 rm -f "$TEMP_INPUT_DATA"
 echo "Cleaned up temporary files"
 
+echo ""
+echo "=========================================="
+echo "Running Analysis..."
+echo "=========================================="
+
+# Auto-run analysis with the same conda environment
+echo "Activating conda environment for analysis: $ENV_NAME"
+eval "$(conda shell.bash hook)"
+conda activate "$ENV_NAME"
+
+# Run the analysis script
+echo "Analyzing results and generating visualizations..."
+python3 scripts/performance/analyze_grid_search.py performance_testing
+
+echo ""
+echo "=========================================="
+echo "Complete! All Results Ready"
+echo "=========================================="
+echo "Generated files in performance_testing/:"
+echo "  - training_*t_*b.log: Individual test logs"
+echo "  - grid_search_results.csv: Summary results"
+echo "  - grid_search_analysis.json: Detailed analysis"
+echo "  - plots/: Performance visualization charts"
+echo ""
 echo "Grid search completed successfully!"
