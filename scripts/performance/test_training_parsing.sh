@@ -88,8 +88,8 @@ def convert_paths(obj):
     if isinstance(obj, list):
         return [convert_paths(item) for item in obj]
     elif isinstance(obj, str) and obj.startswith('../../samples/'):
-        # Convert ../../samples/... to absolute path
-        return os.path.abspath(obj)
+        # Convert ../../samples/... to samples/... (relative to current dir)
+        return obj.replace('../../samples/', 'samples/')
     elif isinstance(obj, dict):
         return {k: convert_paths(v) for k, v in obj.items()}
     else:
