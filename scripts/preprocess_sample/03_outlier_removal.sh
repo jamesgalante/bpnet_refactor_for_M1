@@ -45,3 +45,8 @@ python ../../bpnet-refactor/bpnet/cli/outliers.py \
     --blacklist ../../reference/hg38/blacklist.bed \
     --global-sample-weight 1.0 \
     --output-bed "$SAMPLE_DIR/processed/peaks_inliers.bed"
+
+# Move log file to sample directory
+if [ -f "outliers.log" ]; then
+    mv outliers.log "$SAMPLE_DIR/"
+fi
