@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Global setup for BPNet pipeline - reference files and global configurations
-# Usage: ./setup_global.sh <environment_name>
+# Setup reference data for BPNet pipeline - genome files, blacklist, GC reference
+# Usage: ./setup_reference_data.sh <environment_name>
 
 set -e  # Exit on any error
 
@@ -19,7 +19,7 @@ eval "$(conda shell.bash hook)"
 conda activate "$ENV_NAME"
 
 echo "=========================================="
-echo "Global BPNet Setup"
+echo "BPNet Reference Data Setup"
 echo "=========================================="
 
 # Create reference directory structure
@@ -72,71 +72,14 @@ else
     echo "GC reference already exists, skipping creation"
 fi
 
-# Create global BPNet parameters JSON
-echo "Creating global BPNet parameters..."
-cat > bpnet_params.json << 'EOF'
-{
-    "input_len": 2114,
-    "output_profile_len": 1000,
-    "motif_module_params": {
-        "filters": [64],
-        "kernel_sizes": [21],
-        "padding": "valid"
-    },
-    "syntax_module_params": {
-        "num_dilation_layers": 8,
-        "filters": 64,
-        "kernel_size": 3,
-        "padding": "valid",
-        "pre_activation_residual_unit": true
-    },
-    "profile_head_params": {
-        "filters": 1,
-        "kernel_size":  75,
-        "padding": "valid"
-    },
-    "counts_head_params": {
-        "units": [1],
-        "dropouts": [0.0],
-        "activations": ["linear"]
-    },
-    "profile_bias_module_params": {
-        "kernel_sizes": [1]
-    },
-    "counts_bias_module_params": {
-    },
-    "use_attribution_prior": false,
-    "attribution_prior_params": {
-        "frequency_limit": 150,
-        "limit_softness": 0.2,
-        "grad_smooth_sigma": 3,
-        "profile_grad_loss_weight": 200,
-        "counts_grad_loss_weight": 100        
-    },
-    "loss_weights": [1, 42],
-    "counts_loss": "MSE"
-}
-EOF
+# Note: bpnet_params.json is now created per-sample in step 6 with calculated counts loss weight
 
-# Create global splits JSON
-echo "Creating global chromosome splits..."
-cat > splits.json << 'EOF'
-{
-    "0": {
-        "test":
-            ["chr7", "chr13", "chr17", "chr19", "chr21", "chrX"],
-        "val":
-            ["chr10", "chr18"],
-        "train":
-            ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr8", "chr9", "chr11", "chr12", "chr14", "chr15", "chr16", "chr20", "chr22", "chrY"]
-    }
-}
-EOF
+# Note: splits.json is now created per-sample in step 6 alongside bpnet_params.json
 
 echo ""
 echo "=========================================="
-echo "Global setup completed successfully!"
+echo "Reference data setup completed successfully!"
 echo "Reference files created in: reference/hg38/"
-echo "Global configs created: bpnet_params.json, splits.json"
+echo "Sample-specific configs (bpnet_params.json, splits.json) created during sample processing"
 echo "=========================================="
 echo ""

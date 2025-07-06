@@ -6,6 +6,7 @@
 # Modes:
 #   setup <environment_name>              - Run one-time global setup
 #   process <sample_name> <environment>   - Process a specific sample
+#   train <sample_name> <environment>     - Train BPNet model for a sample
 #   help                                  - Show this help message
 
 set -e  # Exit on any error
@@ -16,11 +17,13 @@ if [ $# -lt 1 ]; then
     echo "Modes:"
     echo "  setup <environment_name>              - Run one-time global setup"
     echo "  process <sample_name> <environment>   - Process a specific sample"
+    echo "  train <sample_name> <environment>     - Train BPNet model for a sample"
     echo "  help                                  - Show this help message"
     echo ""
     echo "Examples:"
     echo "  $0 setup bpnet-m1"
     echo "  $0 process ENCSR000EGM bpnet-m1"
+    echo "  $0 train ENCSR000EGM bpnet-m1"
     exit 1
 fi
 
@@ -38,7 +41,7 @@ case $MODE in
         echo "Running global setup with environment: $ENV_NAME"
         # Set PYTHONPATH for bpnet-refactor access (absolute path)
         export PYTHONPATH="$(pwd)/bpnet-refactor:$PYTHONPATH"
-        ./scripts/setup/setup_global.sh "$ENV_NAME"
+        ./scripts/setup/setup_reference_data.sh "$ENV_NAME"
         ;;
     
     process)
@@ -56,6 +59,21 @@ case $MODE in
         ./preprocess_sample.sh "$SAMPLE_NAME" "$ENV_NAME"
         ;;
     
+    train)
+        if [ $# -ne 2 ]; then
+            echo "Usage: $0 train <sample_name> <environment_name>"
+            echo "Example: $0 train ENCSR000EGM bpnet-m1"
+            exit 1
+        fi
+        SAMPLE_NAME=$1
+        ENV_NAME=$2
+        echo "Training model for sample: $SAMPLE_NAME with environment: $ENV_NAME"
+        # Set PYTHONPATH for bpnet-refactor access (absolute path)
+        export PYTHONPATH="$(pwd)/bpnet-refactor:$PYTHONPATH"
+        cd scripts/train
+        ./train_model.sh "$SAMPLE_NAME" "$ENV_NAME"
+        ;;
+    
     help)
         echo "BPNet Pipeline Main Script"
         echo ""
@@ -64,16 +82,19 @@ case $MODE in
         echo "Modes:"
         echo "  setup <environment_name>              - Run one-time global setup"
         echo "  process <sample_name> <environment>   - Process a specific sample"
+        echo "  train <sample_name> <environment>     - Train BPNet model for a sample"
         echo "  help                                  - Show this help message"
         echo ""
         echo "Examples:"
         echo "  $0 setup bpnet-m1"
         echo "  $0 process ENCSR000EGM bpnet-m1"
+        echo "  $0 train ENCSR000EGM bpnet-m1"
         echo ""
         echo "Workflow:"
         echo "  1. Run 'setup' once to download reference data"
         echo "  2. Create sample directory and config.json"
         echo "  3. Run 'process' for each sample"
+        echo "  4. Run 'train' to train the model on processed data"
         ;;
     
     *)
