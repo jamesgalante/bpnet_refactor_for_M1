@@ -80,15 +80,15 @@ def parse_log_file(log_path):
         result['all_steps'] = []
         result['all_progress_times'] = []
     
-    # Extract timing information using precise training start/end parsing
+    # Extract timing information using training start and end timestamps
     lines = content.split('\n')
-    timestamp_pattern = r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}'
+    timestamp_pattern = r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),?\d*'
     training_start_pattern = r'Training Epoch 1'
+    training_end_pattern = r'Training ended at:'
     progress_pattern = r'(\d+)/(\d+) \[.*?\] - ETA: ([\d:]+)'
     
     start_time = None
     end_time = None
-    last_progress_time = None
     
     for line in lines:
         # Extract timestamp
@@ -106,13 +106,13 @@ def parse_log_file(log_path):
         if re.search(training_start_pattern, line) and start_time is None:
             start_time = current_time
             
-        # Check for progress updates (to find last progress time)
-        if re.search(progress_pattern, line):
-            last_progress_time = current_time
+        # Check for training end timestamp
+        if re.search(training_end_pattern, line):
+            end_time = current_time
     
-    # Calculate duration from Training Epoch 1 to last progress update
-    if start_time and last_progress_time:
-        duration = last_progress_time - start_time
+    # Calculate duration from Training Epoch 1 to training end
+    if start_time and end_time:
+        duration = end_time - start_time
         result['duration_seconds'] = duration.total_seconds()
     else:
         result['duration_seconds'] = None

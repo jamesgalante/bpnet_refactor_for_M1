@@ -178,6 +178,10 @@ for threads in "${THREADS_LIST[@]}"; do
                 --learning-rate 0.001 \
                 2>&1 | tee "$LOG_FILE"
         
+        # Capture exact end time for true training duration calculation
+        END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+        echo "$END_TIME - root - INFO - Training ended at: $END_TIME" >> "$LOG_FILE"
+        
         # Record end time and calculate elapsed time
         end_time=$(date +%s)
         time_elapsed=$((end_time - start_time))
