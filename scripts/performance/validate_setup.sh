@@ -13,7 +13,20 @@ fi
 
 ENV_NAME=$1
 SAMPLE_NAME="ENCSR000EGM"
-SAMPLE_DIR="../../samples/$SAMPLE_NAME"
+
+# Determine the correct path based on where script is run from
+if [ -d "samples/$SAMPLE_NAME" ]; then
+    SAMPLE_DIR="samples/$SAMPLE_NAME"
+    REFERENCE_DIR="reference/hg38"
+    BPNET_DIR="bpnet-refactor"
+elif [ -d "../../samples/$SAMPLE_NAME" ]; then
+    SAMPLE_DIR="../../samples/$SAMPLE_NAME"
+    REFERENCE_DIR="../../reference/hg38"
+    BPNET_DIR="../../bpnet-refactor"
+else
+    echo "Error: Cannot find sample directory. Please run from project root or scripts/performance/"
+    exit 1
+fi
 
 echo "=========================================="
 echo "BPNet Grid Search Setup Validation"
@@ -60,7 +73,6 @@ fi
 
 # Check 3: Reference files exist
 echo "✓ Checking reference files..."
-REFERENCE_DIR="../../reference/hg38"
 REFERENCE_FILES=(
     "hg38.genome.fa"
     "hg38.chrom.sizes"
@@ -85,7 +97,7 @@ fi
 
 # Check 4: bpnet-refactor directory exists
 echo "✓ Checking bpnet-refactor directory..."
-if [ -d "../../bpnet-refactor" ]; then
+if [ -d "$BPNET_DIR" ]; then
     echo "  ✅ bpnet-refactor directory exists"
 else
     echo "  ❌ bpnet-refactor directory missing"
@@ -147,7 +159,7 @@ fi
 
 # Check 8: Test PYTHONPATH and bpnet module
 echo "✓ Testing PYTHONPATH and bpnet module..."
-export PYTHONPATH="$(pwd)/bpnet-refactor:$PYTHONPATH"
+export PYTHONPATH="$(pwd)/$BPNET_DIR:$PYTHONPATH"
 python -c "
 import sys
 try:
@@ -180,7 +192,6 @@ fi
 echo "✓ Testing training command (10 second test)..."
 BASE_DIR="$SAMPLE_DIR"
 MODEL_DIR="$BASE_DIR/models/validation_test"
-REFERENCE_DIR="../../reference/hg38"
 CHROM_SIZES="$REFERENCE_DIR/hg38.chrom.sizes"
 REFERENCE_GENOME="$REFERENCE_DIR/hg38.genome.fa"
 CV_SPLITS="$BASE_DIR/splits.json"
@@ -190,7 +201,7 @@ MODEL_PARAMS="$BASE_DIR/bpnet_params.json"
 mkdir -p "$MODEL_DIR"
 
 # Try 10-second training run
-timeout 10 python ../../bpnet-refactor/bpnet/cli/bpnettrainer.py \
+timeout 10 python $BPNET_DIR/bpnet/cli/bpnettrainer.py \
         --input-data "$INPUT_DATA" \
         --output-dir "$MODEL_DIR" \
         --reference-genome "$REFERENCE_GENOME" \

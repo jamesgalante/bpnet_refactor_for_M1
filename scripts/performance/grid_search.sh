@@ -16,8 +16,21 @@ fi
 ENV_NAME=$1
 TIMEOUT_SECONDS=${2:-90}
 SAMPLE_NAME="ENCSR000EGM"
-SAMPLE_DIR="../../samples/$SAMPLE_NAME"
 RESULTS_FILE="grid_search_results.csv"
+
+# Determine the correct path based on where script is run from
+if [ -d "samples/$SAMPLE_NAME" ]; then
+    SAMPLE_DIR="samples/$SAMPLE_NAME"
+    REFERENCE_DIR="reference/hg38"
+    BPNET_DIR="bpnet-refactor"
+elif [ -d "../../samples/$SAMPLE_NAME" ]; then
+    SAMPLE_DIR="../../samples/$SAMPLE_NAME"
+    REFERENCE_DIR="../../reference/hg38"
+    BPNET_DIR="../../bpnet-refactor"
+else
+    echo "Error: Cannot find sample directory. Please run from project root or scripts/performance/"
+    exit 1
+fi
 
 # Grid search parameters
 THREADS_LIST=(3 5 8 10)
@@ -55,11 +68,10 @@ eval "$(conda shell.bash hook)"
 conda activate "$ENV_NAME"
 
 # Set PYTHONPATH for bpnet-refactor
-export PYTHONPATH="$(pwd)/bpnet-refactor:$PYTHONPATH"
+export PYTHONPATH="$(pwd)/$BPNET_DIR:$PYTHONPATH"
 
 # Set up paths
 BASE_DIR="$SAMPLE_DIR"
-REFERENCE_DIR="../../reference/hg38"
 CHROM_SIZES="$REFERENCE_DIR/hg38.chrom.sizes"
 REFERENCE_GENOME="$REFERENCE_DIR/hg38.genome.fa"
 CV_SPLITS="$BASE_DIR/splits.json"
@@ -98,7 +110,7 @@ for threads in "${THREADS_LIST[@]}"; do
         start_time=$(date +%s)
         
         # Run training with timeout
-        timeout $TIMEOUT_SECONDS python ../../bpnet-refactor/bpnet/cli/bpnettrainer.py \
+        timeout $TIMEOUT_SECONDS python $BPNET_DIR/bpnet/cli/bpnettrainer.py \
                 --input-data "$INPUT_DATA" \
                 --output-dir "$MODEL_DIR" \
                 --reference-genome "$REFERENCE_GENOME" \

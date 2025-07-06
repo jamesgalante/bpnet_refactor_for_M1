@@ -13,8 +13,21 @@ fi
 
 ENV_NAME=$1
 SAMPLE_NAME="ENCSR000EGM"
-SAMPLE_DIR="../../samples/$SAMPLE_NAME"
 TIMEOUT_SECONDS=90
+
+# Determine the correct path based on where script is run from
+if [ -d "samples/$SAMPLE_NAME" ]; then
+    SAMPLE_DIR="samples/$SAMPLE_NAME"
+    REFERENCE_DIR="reference/hg38"
+    BPNET_DIR="bpnet-refactor"
+elif [ -d "../../samples/$SAMPLE_NAME" ]; then
+    SAMPLE_DIR="../../samples/$SAMPLE_NAME"
+    REFERENCE_DIR="../../reference/hg38"
+    BPNET_DIR="../../bpnet-refactor"
+else
+    echo "Error: Cannot find sample directory. Please run from project root or scripts/performance/"
+    exit 1
+fi
 
 echo "Testing training with timeout and progress parsing..."
 echo "Sample: $SAMPLE_NAME"
@@ -48,12 +61,11 @@ eval "$(conda shell.bash hook)"
 conda activate "$ENV_NAME"
 
 # Set PYTHONPATH for bpnet-refactor
-export PYTHONPATH="$(pwd)/bpnet-refactor:$PYTHONPATH"
+export PYTHONPATH="$(pwd)/$BPNET_DIR:$PYTHONPATH"
 
 # Set up paths
 BASE_DIR="$SAMPLE_DIR"
 MODEL_DIR="$BASE_DIR/models/test_run"
-REFERENCE_DIR="../../reference/hg38"
 CHROM_SIZES="$REFERENCE_DIR/hg38.chrom.sizes"
 REFERENCE_GENOME="$REFERENCE_DIR/hg38.genome.fa"
 CV_SPLITS="$BASE_DIR/splits.json"
@@ -68,7 +80,7 @@ echo "Output will be saved to: training_output.log"
 echo ""
 
 # Run training with timeout and capture output
-timeout $TIMEOUT_SECONDS python ../../bpnet-refactor/bpnet/cli/bpnettrainer.py \
+timeout $TIMEOUT_SECONDS python $BPNET_DIR/bpnet/cli/bpnettrainer.py \
         --input-data "$INPUT_DATA" \
         --output-dir "$MODEL_DIR" \
         --reference-genome "$REFERENCE_GENOME" \
