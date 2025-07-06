@@ -36,9 +36,9 @@ else
     exit 1
 fi
 
-# Grid search parameters
-THREADS_LIST=(2 3 4 5)
-BATCH_SIZES=(32 48 64 80)
+# Grid search parameters - minimal for quick testing
+THREADS_LIST=(2)
+BATCH_SIZES=(32 48)
 
 echo "=========================================="
 echo "BPNet Performance Grid Search"
