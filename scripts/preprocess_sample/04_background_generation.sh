@@ -17,7 +17,7 @@ SAMPLE_DIR=$1
 echo "Using global GC reference (created during setup_global.sh)"
 
 echo "Creating gc background"
-python ../..bpnet-refactor/bpnet/cli/gc/get_gc_background.py \
+python ../../bpnet-refactor/bpnet/cli/gc/get_gc_background.py \
         --ref_fasta ../../reference/hg38/hg38.genome.fa \
         --peaks_bed "$SAMPLE_DIR/processed/peaks_inliers.bed" \
         --out_dir "$SAMPLE_DIR/processed/" \
