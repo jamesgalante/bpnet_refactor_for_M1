@@ -72,6 +72,42 @@ CV_SPLITS="$BASE_DIR/splits.json"
 INPUT_DATA="$BASE_DIR/results/input_data.json"
 MODEL_PARAMS="$BASE_DIR/bpnet_params.json"
 
+# Create temporary input_data.json with absolute paths for this script
+TEMP_INPUT_DATA="test_input_data.json"
+echo "Creating temporary input_data.json with absolute paths..."
+python3 -c "
+import json
+import os
+
+# Read the original input_data.json
+with open('$INPUT_DATA', 'r') as f:
+    data = json.load(f)
+
+# Convert relative paths to absolute paths
+def convert_paths(obj):
+    if isinstance(obj, list):
+        return [convert_paths(item) for item in obj]
+    elif isinstance(obj, str) and obj.startswith('../../samples/'):
+        # Convert ../../samples/... to absolute path
+        return os.path.abspath(obj)
+    elif isinstance(obj, dict):
+        return {k: convert_paths(v) for k, v in obj.items()}
+    else:
+        return obj
+
+# Convert all paths
+converted_data = convert_paths(data)
+
+# Write temporary file
+with open('$TEMP_INPUT_DATA', 'w') as f:
+    json.dump(converted_data, f, indent=4)
+
+print('Temporary input_data.json created with absolute paths')
+"
+
+# Use the temporary file for training
+INPUT_DATA="$TEMP_INPUT_DATA"
+
 # Create test model output directory
 mkdir -p "$MODEL_DIR"
 
@@ -138,6 +174,7 @@ done
 echo "Progress parsing test completed!"
 echo "Log file saved as: training_output.log"
 
-# Clean up test model directory
+# Clean up test model directory and temporary files
 rm -rf "$MODEL_DIR"
-echo "Test model directory cleaned up"
+rm -f "$TEMP_INPUT_DATA"
+echo "Test model directory and temporary files cleaned up"

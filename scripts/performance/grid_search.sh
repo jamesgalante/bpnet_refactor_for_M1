@@ -78,6 +78,42 @@ CV_SPLITS="$BASE_DIR/splits.json"
 INPUT_DATA="$BASE_DIR/results/input_data.json"
 MODEL_PARAMS="$BASE_DIR/bpnet_params.json"
 
+# Create temporary input_data.json with absolute paths for this script
+TEMP_INPUT_DATA="grid_search_input_data.json"
+echo "Creating temporary input_data.json with absolute paths..."
+python3 -c "
+import json
+import os
+
+# Read the original input_data.json
+with open('$INPUT_DATA', 'r') as f:
+    data = json.load(f)
+
+# Convert relative paths to absolute paths
+def convert_paths(obj):
+    if isinstance(obj, list):
+        return [convert_paths(item) for item in obj]
+    elif isinstance(obj, str) and obj.startswith('../../samples/'):
+        # Convert ../../samples/... to absolute path
+        return os.path.abspath(obj)
+    elif isinstance(obj, dict):
+        return {k: convert_paths(v) for k, v in obj.items()}
+    else:
+        return obj
+
+# Convert all paths
+converted_data = convert_paths(data)
+
+# Write temporary file
+with open('$TEMP_INPUT_DATA', 'w') as f:
+    json.dump(converted_data, f, indent=4)
+
+print('Temporary input_data.json created with absolute paths')
+"
+
+# Use the temporary file for training
+INPUT_DATA="$TEMP_INPUT_DATA"
+
 # Create results file with header
 echo "threads,batch_size,steps_completed,total_steps,time_elapsed,steps_per_minute,status" > "$RESULTS_FILE"
 
@@ -233,4 +269,9 @@ if [ $completed_runs -gt 0 ]; then
 fi
 
 echo "All log files saved with pattern: training_*t_*b.log"
+
+# Clean up temporary files
+rm -f "$TEMP_INPUT_DATA"
+echo "Cleaned up temporary files"
+
 echo "Grid search completed successfully!"
